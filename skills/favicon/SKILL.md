@@ -1,6 +1,7 @@
 ---
+name: favicon
+description: Generate a complete set of favicons from a source image and update HTML. Use when setting up favicons for a web project.
 argument-hint: [path to source image]
-description: Generate favicons from a source image
 ---
 
 Generate a complete set of favicons from the source image at `$1` and update the project's HTML with the appropriate link tags.

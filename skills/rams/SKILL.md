@@ -1,5 +1,6 @@
 ---
-description: Run accessibility and visual design review
+name: rams
+description: Run accessibility and visual design review on components. Use when reviewing UI code for WCAG compliance and design issues.
 ---
 
 # Rams Design Review

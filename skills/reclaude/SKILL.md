@@ -1,3 +1,8 @@
+---
+name: reclaude
+description: Refactor CLAUDE.md files to follow progressive disclosure principles. Use when CLAUDE.md is too long or disorganized.
+---
+
 # reclaude
 
 Refactor CLAUDE.md files to follow progressive disclosure principles.
