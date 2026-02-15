@@ -329,3 +329,62 @@ win:
 ```
 
 Platform-independent resources (server bundle, web app dist) can stay in the top-level `extraResources`.
+
+---
+
+## 12. Bun Workspaces Hoist Dependencies Away from electron-builder
+
+**Problem:** If the Electron directory is a workspace in a Bun monorepo, Bun hoists all dependencies to the root `node_modules/`. electron-builder expects production deps in `electron/node_modules/` and won't find them. Even if you manually whitelist packages in the `files` section, you'll miss transitive dependencies and get `ERR_MODULE_NOT_FOUND` at runtime.
+
+**Symptoms:**
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'ajv-formats' imported from .../conf/dist/source/index.js
+```
+The app builds without error, but crashes on launch because a transitive dependency (e.g., `ajv-formats` needed by `conf` needed by `electron-store`) is missing from the packaged app.
+
+**Solution A (recommended for Bun workspaces):** Bundle the main process with esbuild, inlining all dependencies. No `node_modules` needed in the packaged app:
+
+```json
+{
+  "scripts": {
+    "build:main": "esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/main/main/index.js --external:electron --banner:js=\"import { createRequire } from 'module'; var require = createRequire(import.meta.url);\"",
+    "build:preload": "esbuild src/preload/index.ts --bundle --platform=node --format=cjs --outfile=dist/preload/preload/index.js --external:electron"
+  }
+}
+```
+
+The `createRequire` banner is essential — CJS packages like `electron-log` use `require("electron")` internally, which fails in ESM output without a real `require` function. The banner provides one via Node's `module.createRequire`.
+
+With this approach, `electron-builder.yml` excludes all node_modules:
+```yaml
+files:
+  - dist/**/*
+  - assets/**/*
+  - "!node_modules"
+```
+
+**Solution B (recommended for standalone Electron projects):** Use npm (not Bun) for the Electron directory so deps stay in `electron/node_modules/`. Use `tsc` for the main process and `files: - dist/**/*` in electron-builder.yml — electron-builder handles production deps automatically.
+
+**Why not whitelist node_modules?** A manual whitelist like `node_modules/electron-store/**/*` is fragile — it misses transitive deps and breaks silently whenever a dependency updates its dependency tree.
+
+---
+
+## 13. Never Build Release Artifacts Locally
+
+**Problem:** Running `electron-builder --publish always` or `gh release create` with locally-built artifacts produces apps that aren't notarized. macOS Gatekeeper will block them with "Apple could not verify" errors.
+
+**Symptoms:**
+- Build log shows `skipped macOS notarization  reason=notarize options were unable to be generated`
+- Downloaded app shows "Apple could not verify" dialog
+- Users can't open the app without `xattr -cr`
+
+**Solution:** Always cut releases through CI. The correct workflow:
+
+1. Bump version in `electron/package.json`, commit, merge to main
+2. Find the CI workflow's tag pattern: `grep -A2 'tags:' .github/workflows/*.yml`
+3. Tag the merged commit on main: `git tag <pattern><version> origin/main`
+4. Push the tag: `git push origin <tag>`
+5. Monitor CI: `gh run list --workflow=<workflow>.yml --limit=1`
+6. Review the draft release on GitHub, then publish
+
+CI has the signing certificates (`APPLE_CERTIFICATE`), notarization credentials (`APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID`), and publish tokens that local machines don't have.

@@ -5,7 +5,8 @@ description: >
   auto-updates, code signing, and CI/CD distribution. Use when the user wants to
   create a native desktop application from an existing Bun-based web server,
   package it for macOS/Windows, set up auto-updating, or handle Electron UX
-  concerns like drag regions and traffic lights.
+  concerns like drag regions and traffic lights. Also use when cutting releases
+  or tagging versions for Electron apps.
 ---
 
 # Electron Wrapper for Bun Web Apps
@@ -93,7 +94,7 @@ Bundle everything, set up CI/CD, and handle code signing.
 5. electron-builder packages everything with `extraResources`
 
 **CI/CD:**
-- GitHub Actions triggered by `v*` tags
+- GitHub Actions triggered by version tags (e.g., `v*`, `clippy-v*`)
 - Matrix builds: macOS arm64/x64 on `macos-14`, Windows x64 on `windows-latest`
 - `--publish never` in build step, separate publish job creates draft GitHub release
 - Apple certificate import and notarization in CI
@@ -108,6 +109,36 @@ Bundle everything, set up CI/CD, and handle code signing.
 - Windows: `png-to-ico` npm package → `.ico`
 
 **Reference:** [build-and-distribute.md](references/build-and-distribute.md)
+
+## Cutting a Release
+
+**Never build release artifacts locally.** CI has the signing certificates and notarization credentials. Local builds produce unsigned apps that macOS Gatekeeper will block.
+
+### Release workflow:
+
+1. **Bump version** in `electron/package.json`, commit, and merge to main
+2. **Find the tag pattern** the CI workflow expects:
+   ```bash
+   grep -A2 'tags:' .github/workflows/*.yml
+   ```
+3. **Tag the merged commit on main:**
+   ```bash
+   git tag <pattern><version> origin/main
+   git push origin <pattern><version>
+   ```
+4. **Monitor CI:**
+   ```bash
+   gh run list --workflow=<workflow>.yml --limit=1
+   ```
+5. **Review and publish** the draft release on GitHub
+
+### Common mistakes:
+- Running `electron-builder --publish always` locally — no notarization
+- Using `gh release create` with local artifacts — unsigned
+- Tagging before the version bump is merged — wrong version in build
+- Tagging a feature branch instead of `origin/main`
+
+See [pitfalls.md §13](references/pitfalls.md) for full details.
 
 ## Critical Pitfalls
 
@@ -124,6 +155,8 @@ Quick-reference list — see [pitfalls.md](references/pitfalls.md) for full deta
 | 7 | Wrong storage path | Env var + `app.getPath("userData")` |
 | 8 | White flash on open | `show: false` + `ready-to-show` + dark `backgroundColor` |
 | 11 | `${platform}` != `process.platform` | Put Bun `extraResources` in `mac:`/`win:` sections with `darwin-`/`win32-` prefixes |
+| 12 | Bun workspace hoists deps | Bundle main with esbuild + `createRequire` banner, or use npm for electron dir |
+| 13 | Local builds aren't notarized | Always release via CI tags, never `electron-builder --publish` locally |
 
 ## Dev Workflow
 
