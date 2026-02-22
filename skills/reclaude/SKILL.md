@@ -20,7 +20,19 @@ Report the current line count. Flag issues:
 - **Acceptable**: 50-100 lines
 - **Needs refactoring**: >100 lines (move content to `.claude/rules/` files)
 
-### 2. Ensure verification section exists
+### 2. Integrate workflow orchestration
+
+Read the workflow skill at `~/.claude/skills/workflow/SKILL.md` and incorporate its principles into the CLAUDE.md or a `.claude/rules/workflow.md` file. Adapt the content to fit the project — don't copy verbatim, but ensure the key behaviors are represented:
+- Plan mode for non-trivial tasks
+- Subagent strategy
+- Self-improvement loop with `tasks/lessons.md`
+- Verification before marking tasks done
+- Elegance checks for non-trivial changes
+- Autonomous bug fixing
+
+For short CLAUDE.md files, add a concise workflow section. For longer ones, create `.claude/rules/workflow.md` and link to it.
+
+### 3. Ensure verification section exists
 
 Check for a `## Verification` section with commands Claude can run after making changes. If missing:
 - Look in package.json for test/lint/typecheck/build scripts
@@ -29,11 +41,11 @@ Check for a `## Verification` section with commands Claude can run after making 
 
 This is critical—Claude performs dramatically better when it can verify its work.
 
-### 3. Find contradictions
+### 4. Find contradictions
 
 Identify any instructions that conflict with each other. For each contradiction, ask me which version I want to keep.
 
-### 4. Check for global skill extraction candidates
+### 5. Check for global skill extraction candidates
 
 Look for content that could become a **reusable global skill** in `~/.claude/skills/`:
 - Is about a tool/framework (not project-specific)
@@ -42,7 +54,7 @@ Look for content that could become a **reusable global skill** in `~/.claude/ski
 
 If found, suggest creating a global skill with name and description.
 
-### 5. Identify essentials for root CLAUDE.md
+### 6. Identify essentials for root CLAUDE.md
 
 Extract only what belongs in the root CLAUDE.md:
 - One-line project description
@@ -51,11 +63,11 @@ Extract only what belongs in the root CLAUDE.md:
 - Links to `.claude/rules/` files with brief descriptions
 - Verification section (always required)
 
-### 6. Group remaining content
+### 7. Group remaining content
 
 Organize remaining instructions into `.claude/rules/` files by category (e.g., TypeScript conventions, testing patterns, API design, Git workflow).
 
-### 7. Flag for deletion
+### 8. Flag for deletion
 
 Identify content that should be removed entirely:
 - **API documentation** — link to external docs instead
