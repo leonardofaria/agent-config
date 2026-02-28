@@ -2,6 +2,8 @@
 
 My agent configuration for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and Codex.
 
+Fork from: https://github.com/brianlovin/agent-config.git
+
 ## Quick start
 
 ```bash
@@ -22,12 +24,19 @@ Reusable capabilities that your coding agents can invoke.
 | Skill | Description |
 |-------|-------------|
 | `agent-browser` | Browser automation for web testing and interaction |
+| `deslop` | Remove AI-generated code slop |
 | `favicon` | Generate favicons from a source image |
+| `find-skills` | Discover and install agent skills |
+| `fix-sentry-issues` | Triage and fix production issues via Sentry MCP |
+| `frontend-design` | Create distinctive, production-grade frontend interfaces |
 | `knip` | Find and remove unused files, dependencies, and exports |
 | `rams` | Run accessibility and visual design review |
+| `react-doctor` | Diagnose and fix React codebase health issues |
 | `reclaude` | Refactor CLAUDE.md files for progressive disclosure |
-| `simplify` | Code simplification specialist |
-| `deslop` | Remove AI-generated code slop |
+| `simplify` | Simplify and refine code for clarity and consistency |
+| `vercel-react-best-practices` | React and Next.js performance optimization guidelines |
+| `web-design-guidelines` | Review UI code for Web Interface Guidelines compliance |
+| `workflow` | Workflow orchestration for complex coding tasks |
 
 ## Managing your config
 
@@ -114,4 +123,4 @@ agent-config/
 ## See also
 
 - [Claude Code docs](https://docs.anthropic.com/en/docs/claude-code)
-- [My dotfiles](https://github.com/brianlovin/dotfiles) - Shell, git, SSH config
+- [My dotfiles](https://github.com/leonardofaria/dotfiles) - Shell, git, SSH config
