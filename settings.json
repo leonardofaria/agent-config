@@ -1,8 +1,36 @@
 {
   "permissions": {
     "allow": [
+      "mcp__claude_ai_Linear__get_issue",
+      "mcp__claude_ai_Linear__list_issues",
+      "mcp__claude_ai_Linear__list_teams",
+      "mcp__linear__list_issues",
+      "mcp__linear__get_issue",
+      "mcp__notion__notion-fetch",
+      "mcp__postgres__query",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(* | grep *)",
+      "Bash(find:*)",
+      "Bash(* | find *)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(pnpm:*)",
+      "Bash(npm:*)",
+      "Bash(bun:*)",
+      "Bash(yarn:*)",
       "Bash(gh:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(hasura:*)",
+      "WebSearch",
+      "WebFetch"
     ],
     "deny": []
   },
@@ -10,6 +38,8 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
+  "includeCoAuthoredBy": false,
+  "gitAttribution": false,
   "alwaysThinkingEnabled": true,
   "skipDangerousModePermissionPrompt": true
 }
